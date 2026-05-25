@@ -1,518 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="icon" href="https://nexustore.github.io/assets/NexuStoreByTermos.png" type="image/png" />
-<title>NexuStore</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>carbonstore</title>
 <style>
-  /* Reset and base */
-  * {
-    box-sizing: border-box;
-  }
   body {
+    background: #ffffff;
+    color: #000000;
+    font-family: monospace;
+    font-size: 14px;
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
+    padding: 10px;
   }
-  header {
-    background-color: #1e88e5;
-    padding: 1rem 2rem;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  h1 {
+    font-size: 20px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
   }
-  header .logo {
-    font-weight: 700;
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    cursor: default;
-  }
-  nav {
-    /* No buttons here */
-  }
-  .search-container {
-    margin: 2rem auto;
-    max-width: 600px;
-    display: flex;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .search-container input[type="text"] {
-    flex-grow: 1;
-    padding: 0.75rem 1rem;
-    border: none;
-    font-size: 1rem;
-  }
-  .search-container button {
-    background-color: #1e88e5;
-    border: none;
-    color: white;
-    padding: 0 1rem;
-    cursor: pointer;
-    font-size: 1.3rem;
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-  .search-container button:hover {
-    background-color: #1565c0;
-  }
-  main {
-    max-width: 1200px;
-    margin: 0 auto 3rem auto;
-    padding: 0 1rem;
-  }
-  h2 {
-    margin-bottom: 1rem;
-    font-weight: 700;
-    color: #1e88e5;
-  }
-  .games-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
-    gap: 1.5rem;
-  }
-  a.game-card {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-    position: relative;
-  }
-  a.game-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  }
-  .game-image {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-  }
-  .game-info {
-    padding: 1rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .game-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-  }
-  .game-description {
-    font-size: 0.9rem;
+  p.sub {
+    margin: 0 0 14px 0;
     color: #555;
-    flex-grow: 1;
+    font-size: 12px;
   }
-  .os-compatibility {
-    margin-top: 0.75rem;
+  input[type="text"] {
+    width: 200px;
+    padding: 3px 5px;
+    border: 1px solid #000;
+    font-family: monospace;
+    font-size: 13px;
+    margin-bottom: 10px;
   }
-  .os-badge {
+  select {
+    padding: 3px 5px;
+    border: 1px solid #000;
+    font-family: monospace;
+    font-size: 13px;
+    margin-bottom: 10px;
+    margin-left: 6px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    background: #000;
+    color: #fff;
+    text-align: left;
+    padding: 4px 8px;
+    font-weight: normal;
+  }
+  td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #ccc;
+    vertical-align: middle;
+  }
+  tr:hover td {
+    background: #f0f0f0;
+  }
+  .thumb {
+    width: 92px;
+    height: 43px;
+    object-fit: cover;
+    display: block;
+    border: 1px solid #ccc;
+    background: #eee;
+  }
+  .thumb-cell {
+    width: 100px;
+    padding: 4px 6px;
+  }
+  .tag {
     display: inline-block;
-    background-color: #e3f2fd;
-    color: #1565c0;
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 0.8rem;
-    margin-right: 0.5rem;
-    user-select: none;
+    background: #e0e0e0;
+    font-size: 11px;
+    padding: 1px 5px;
+    margin-right: 3px;
   }
-  /* Style for the badge with darker green outline, semi-transparent background, and outline */
-  .download-status {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background-color: rgba(76, 175, 80, 0.5); /* semi-transparent green */
-    border: 2px solid #2e7d32; /* darker green outline */
-    border-radius: 20px; /* capsule shape */
-    padding: 4px 10px; /* padding to expand width if needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    white-space: nowrap; /* prevent wrapping */
-    max-width: 80%; /* prevent overflow */
+  a.dl {
+    color: #fff;
+    background: #000;
+    padding: 3px 10px;
+    text-decoration: none;
+    font-size: 12px;
+    display: inline-block;
+    white-space: nowrap;
   }
-    .online-game-status {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background-color: #4c7faf80; /* semi-transparent green */
-    border: 2px solid #4c7faf; /* darker green outline */
-    border-radius: 20px; /* capsule shape */
-    padding: 4px 10px; /* padding to expand width if needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    white-space: nowrap; /* prevent wrapping */
-    max-width: 80%; /* prevent overflow */
+  a.dl:hover {
+    background: #444;
   }
-  .online-download-game-status {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background-color: #af4c4c80; /* semi-transparent green */
-    border: 2px solid #af4c4c; /* darker green outline */
-    border-radius: 20px; /* capsule shape */
-    padding: 4px 10px; /* padding to expand width if needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    white-space: nowrap; /* prevent wrapping */
-    max-width: 80%; /* prevent overflow */
+  .win-badge {
+    font-size: 11px;
+    color: #0078d7;
+    font-weight: bold;
   }
+  .size { color: #555; font-size: 12px; }
+  .rating { color: #888; font-size: 12px; white-space: nowrap; }
+  #count { font-size: 12px; color: #555; margin-bottom: 6px; }
   footer {
-    text-align: center;
-    padding: 2rem 1rem;
-    color: #777;
-    font-size: 0.9rem;
-  }
-  .no-results {
-    text-align: center;
-    color: #777;
-    font-style: italic;
-    margin-top: 2rem;
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 6px;
+    font-size: 11px;
+    color: #888;
   }
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">NexuStore</div>
-  <nav>
-    <!-- No buttons here -->
-  </nav>
-</header>
-<div class="search-container">
-  <input id="searchInput" type="text" placeholder="Search games..." aria-label="Search games" onkeydown="if(event.key==='Enter'){performSearch();}" />
-  <button type="button" aria-label="Search" onclick="performSearch()">🔍</button>
-</div>
-<main>
-  <h2>All Games</h2>
-  <div id="gamesGrid" class="games-grid">
-    <a href="https://nexustore.github.io/games/game1.html" class="game-card" data-title="Geometry Dash" tabindex="0">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/322170/header.jpg?t=1703006148" alt="Geometry Dash" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Geometry Dash</div>
-        <div class="game-description">Jump and fly your way through danger in this rhythm-based action platformer!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Windows</span>
-          <span class="os-badge">Android</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game2.html" class="game-card" data-title="People Playground" tabindex="0">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1118200/header.jpg?t=1717246983" alt="People Playground" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">People Playground</div>
-        <div class="game-description">Shoot, stab, burn, poison, tear, vaporise, or crush ragdolls in a large open space.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Windows</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game3.html" class="game-card" data-title="Minecraft" tabindex="0">
-      <img src="https://store-images.s-microsoft.com/image/apps.60323.14294656681058683.4d17bdd8-7026-429a-846f-cf7836bc9e56.a69e6905-8926-4a48-b243-14a039b97aae?mode=scale&q=90&h=1080&w=1920&format=jpg" alt="Minecraft" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Minecraft Bedrock</div>
-        <div class="game-description">Explore your own unique world, survive the night and create anything you can imagine!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Android</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game4.html" class="game-card" data-title="Friday Night Funkin" tabindex="0">
-      <img src="https://wallpapers.com/images/featured/friday-night-funkin-tpsteierwo9am3z9.jpg" alt="Friday Night Funkin" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Friday Night Funkin</div>
-        <div class="game-description">Uh oh! You're tryin to kiss ur hot girlfriend, but her MEAN and EVIL dad is trying to KILL you! He's an ex-rockstar, the only way to get to his heart? The power of music...</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Windows</span>
-          <span class="os-badge">Mac</span>
-          <span class="os-badge">Linux</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game5.html" class="game-card" data-title="Incredibox" tabindex="0">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1545450/header.jpg?t=1736795580" alt="Incredibox" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Incredibox</div>
-        <div class="game-description">Incredibox is a music app - you can create your own music with the help of a cool crew of beatboxers.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Windows</span>
-          <span class="os-badge">Android</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game6.html" class="game-card" data-title="Minecraft" tabindex="0">
-      <img src="https://wallpapercave.com/wp/wp7551015.jpg" alt="Minecraft" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Minecraft Java</div>
-        <div class="game-description">Explore your own unique world, survive the night and create anything you can imagine!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Windows</span>
-          <span class="os-badge">Mac</span>
-          <span class="os-badge">Linux</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game7.html" class="game-card" data-title="Break n' Blocks" tabindex="0">
-      <img src="https://project-screenshots.websim.com/0197a278-b110-7183-9608-32bebd8615a4" alt="Break n' Blocks" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Break n' Blocks</div>
-        <div class="game-description">Drop your pickaxe, and start breaking these blocks!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-        <a href="https://nexustore.github.io/games/game8.html" class="game-card" data-title="Bloxd.io" tabindex="0">
-      <img src="https://th.bing.com/th/id/OIP.djfiPMLhVo42nX-AqDPlAwHaEK?rs=1&pid=ImgDetMain&cb=idpwebpc2" alt="Bloxd.io" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Bloxd.io</div>
-        <div class="game-description">It is a multiplayer sandbox game where you can build, explore, and compete in voxel worlds. Play with Friends in mini-games such as bedwars, skywars and more or unleash your creativity by designing your worlds.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game9.html" class="game-card" data-title="WorldGuessr" tabindex="0">
-      <img src="https://th.bing.com/th/id/OIP.T6jcXhDhwSSC6s69vLyDqgHaEH?rs=1&pid=ImgDetMain&cb=idpwebpc2" alt="WorldGuessr" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">WorldGuessr</div>
-        <div class="game-description">WorldGuessr is a geography game, in which you are dropped somewhere in the world in a street view panorama and your mission is to find clues and guess your location on the world map.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game10.html" class="game-card" data-title="Deltarune" tabindex="0">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1671210/7ccda5b1631d2e60cc756a3271e845dbb9168821/header.jpg?t=1749252480" alt="Deltarune" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Deltarune</div>
-        <div class="game-description">Dive into the parallel story to UNDERTALE! Fight or spare your way through action-packed battles as you explore a mysterious world alongside an endearing cast of new and familiar characters. Chapters 1-4 will be available on launch, with more planned as free updates!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Windows</span>
-          <span class="os-badge">Android</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game11.html" class="game-card" data-title="Slither.io" tabindex="0">
-      <img src="https://th.bing.com/th/id/OIP.3ILfqwHUHsgkLKtRA2fPsAHaEK?rs=1&pid=ImgDetMain&cb=idpwebpc2" alt="Slither.io" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Slither.io</div>
-        <div class="game-description">Enter a victory message that you would like all other players to see! The smash-hit game! Play with millions of players around the world and try to become the longest of the day!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game12.html" class="game-card" data-title="Diep.io" tabindex="0">
-      <img src="https://cdn6.aptoide.com/imgs/e/6/4/e6422301606a0c7ed313f213bf7d3047_feature_graphic.png" alt="Diep.io" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Diep.io</div>
-        <div class="game-description">Diep.io is a survival .io game where you control a circle armed with a cannon. The aim is simple - move around the map and destroy the other players whilst improving and upgrading your own circle.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game13.html" class="game-card" data-title="Paper.io" tabindex="0">
-      <img src="https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/software/switch/70010000068359/73341197ab2f46b0b68c46bd610bcd65ba490045423c918e4a9f199cd7584e20" alt="Paper.io" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Paper.io</div>
-        <div class="game-description">Capture territory with your paper square, but watch out for other players trying to do the same.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game14.html" class="game-card" data-title="Capybara Clicker" tabindex="0">
-      <img src="https://images.crazygames.com/games/capybara-clicker/cover-1678290947532.png?auto=format%2Ccompress&q=45&cs=strip&ch=DPR&w=1200&h=630&fit=crop" alt="Capybara Clicker" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Capybara Clicker</div>
-        <div class="game-description">Capybara Clicker is an addictive incremental game where you click on cute capybaras to earn points.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game15.html" class="game-card" data-title="Capybara Clicker 2" tabindex="0">
-      <img src="https://cdn2.spatial.io/assets/v1/static/external_games/capybara-clicker-2.jpeg" alt="Capybara Clicker 2" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Capybara Clicker 2</div>
-        <div class="game-description">Capybara Clicker 2 brings even more fun to the popular incremental game series. Click on adorable capybaras, collect new characters, unlock powerful upgrades, and explore exciting new features in this enhanced sequel!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game16.html" class="game-card" data-title="Stimulation Clicker" tabindex="0">
-      <img src="https://dotesports.com/wp-content/uploads/2025/01/stimulting-clicker.jpg" alt="Stimulation Clicker" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Stimulation Clicker</div>
-        <div class="game-description">Stimulation Clicker is an addictive and engaging incremental game that combines simple clicking mechanics with deep strategic elements. Click to earn stimulation points, invest in upgrades, unlock power-ups, and complete achievements to optimize your clicking empire.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game17.html" class="game-card" data-title="Particle Life" tabindex="0">
-      <img src="https://hunar4321.github.io/particle-life/images/big_pic.jpg" alt="Particle Life" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Particle Life</div>
-        <div class="game-description">Thousands of particles interact and evolve, creating intricate, life-like structures based on simple, foundational rules.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Every Device (🌐)</span>
-          <span class="os-badge">Windows (⬇️)</span>
-        </div>
-         <div class="online-download-game-status" title="Online and Downloadable">
-          🌐⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game18.html" class="game-card" data-title="Grow A Garden" tabindex="0">
-      <img src="https://nexustore.github.io/assets/GrowAGarden.png" alt="Grow A Garden" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Grow A Garden</div>
-        <div class="game-description">Are you ready to grow your very own garden? Buy seeds from the shop when they restock, plant them, wait for them to grow, and collect the profits! Flex fruits and finds on friends, and have fun!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">PC Only</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game19.html" class="game-card" data-title="Getting Over It with Bennett Foddy" tabindex="0">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/240720/header.jpg?t=1666987027" alt="Getting Over It with Bennett Foddy" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Getting Over It with Bennett Foddy</div>
-        <div class="game-description">Getting Over It with Bennett Foddy is a punishing climbing game, a homage to Jazzuo's 2002 B-Game classic 'Sexy Hiking'. You move the hammer with the mouse, and that's all there is. With practice, you'll be able to jump, swing, climb and fly. Great mysteries and a wonderful reward await the master hikers who reach the top of the mountain.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">Windows</span>
-        </div>
-        <div class="download-status" title="Download only">
-          ⬇️
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game20.html" class="game-card" data-title="Super Mario 64" tabindex="0">
-      <img src="https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/07/super-mario-64-key-art.jpg" alt="Super Mario 64" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Super Mario 64</div>
-        <div class="game-description">Explore the Mushroom Kingdom with our favorite plumber in Super Mario 64 with mind-blowing 3D graphics! Princess Peach has invited you to share a special moment in her castle, but the evil Bowser has arrived to ruin the celebration. The villain has used the power of the stars to imprison Peach and her servants. Now, your mission is to help Mario find these stars in the different worlds to save the princess from her prison. With each recovered star you will gain access to new parts of the castle until you can face Bowser and free your beloved Peach from her captivity.</div>
-        <div class="os-compatibility">
-          <span class="os-badge">PC Only</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-    <a href="https://nexustore.github.io/games/game21.html" class="game-card" data-title="Voxiom.io" tabindex="0">
-      <img src="https://th.bing.com/th/id/OIP.24mu4dCEkmirmbYDM0axxAHaD4?rs=1&pid=ImgDetMain&cb=idpwebpc2" alt="Voxiom.io" class="game-image" />
-      <div class="game-info">
-        <div class="game-title">Voxiom.io</div>
-        <div class="game-description">Play the best browser multiplayer voxel first person shooter inspired by minecraft, fortnite, counter-strike, and call of duty!</div>
-        <div class="os-compatibility">
-          <span class="os-badge">PC Only</span>
-        </div>
-        <div class="online-game-status" title="Online only">
-          🌐
-        </div>
-      </div>
-    </a>
-  </div>
-  <div id="noResultsMessage" class="no-results" style="display:none;">No games found matching your search.</div>
-</main>
-<footer>
-  &copy; 2025 NexuStore - All rights reserved.
-</footer>
+
+<h1>carbonstore</h1>
+<p class="sub">a simple game store for <span class="win-badge">Windows</span>. click download to get a game.</p>
+
+<input type="text" id="search" placeholder="search games..." oninput="render()">
+<select id="genre" onchange="render()">
+  <option value="">all genres</option>
+  <option value="action">action</option>
+  <option value="rpg">rpg</option>
+  <option value="strategy">strategy</option>
+  <option value="puzzle">puzzle</option>
+  <option value="shooter">shooter</option>
+  <option value="survival">survival</option>
+  <option value="platformer">platformer</option>
+  <option value="horror">horror</option>
+  <option value="simulation">simulation</option>
+</select>
+
+<div id="count"></div>
+
+<table id="table">
+  <thead>
+    <tr>
+      <th></th>
+      <th>name</th>
+      <th>genre</th>
+      <th>size</th>
+      <th>rating</th>
+      <th>os</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<footer>basic game store. windows only. all downloads link to official pages.</footer>
+
 <script>
-  function performSearch() {
-    const input = document.getElementById('searchInput').value.trim().toLowerCase();
-    const gamesGrid = document.getElementById('gamesGrid');
-    const noResultsMessage = document.getElementById('noResultsMessage');
-    let foundAny = false;
-    const gameCards = gamesGrid.querySelectorAll('a.game-card');
-    gameCards.forEach(card => {
-      const title = card.getAttribute('data-title').toLowerCase();
-      if(title.includes(input)) {
-        card.style.display = '';
-        foundAny = true;
-      } else {
-        card.style.display = 'none';
-      }
-    });
-    noResultsMessage.style.display = foundAny ? 'none' : 'block';
+// Add your games here. Copy the template below and fill in your own info.
+// img: use a direct image URL, or set steamId to your game's Steam app ID for an auto thumbnail.
+// Leave steamId as null if you have a custom img URL.
+
+var games = [
+  {
+    name: "Deltarune",
+    genre: "rpg",
+    size: "504 MB",
+    rating: "4,8/5",
+    tags: ["bullet hell", "story-rich"],
+    url: "https://buffdrive.com/7cn?pt=ZWVncDNOeDVVNjN1T3FoRzE4MTVlWGQyWWtsVVZFWmxOSHBxYm1GS1YxRlNXSE51UzBFOVBRPT0%3D",
+    img: "",
+    steamId: "1671210"
+  },
+  {
+    name: "Undertale",
+    genre: "rpg",
+    size: "172 MB",
+    rating: "4,9/10",
+    tags: ["pixel art", "choices matter"],
+    url: "https://buffdrive.com/rv?pt=OCtKMlJkNXVsTGlJWDBLUjN3Wk0yVWxITlVJclRFaHVURVUyWm1WaVVIZExaa1UwUjJjOVBRPT0%3D",
+    img: "",
+    steamId: "391540"
+  },
+  {
+    name: "Ultrakill",
+    genre: "action",
+    size: "3.3 GB",
+    rating: "4,9/10",
+    tags: ["pixel art", "choices matter"],
+    url: "https://buffdrive.com/cqa?pt=a210Nm5IVVpmL0tONXpld2oxTGtIRFZWZHl0b1NVRXdSSHBaT0UxT1NrOWhTbXhvTWtFOVBRPT0%3D",
+    img: "",
+    steamId: "1229490"
+  },
+  {
+    name: "Geometry Dash",
+    genre: "action",
+    size: "204 MB",
+    rating: "4,7/10",
+    tags: ["rhythm game", "level editor"],
+    url: "https://buffdrive.com/4wo?pt=cm5XR1JFVXp6UU9IQmxFVjVyR2IwMVJvYW5sTU9VTkJSamx6Ym5CS1JtSkxiVlJyYmxFOVBRPT0%3D",
+    img: "",
+    steamId: "322170"
+  },
+  {
+    name: "People Playground",
+    genre: "simulation",
+    size: "211 MB",
+    rating: "4,8/10",
+    tags: ["physics", "gore"],
+    url: "https://buffdrive.com/cpx?pt=OU5pdXJRaTJUaDlEOWl0VExBTUxWamd5Y2pJck9VdENVRWhaY0RNMGVrMHlZWEpHZDFFOVBRPT0%3D",
+    img: "",
+    steamId: "1118200"
+  },
+  {
+    name: "Lethal Company",
+    genre: "horror",
+    size: "706 MB",
+    rating: "4,8/10",
+    tags: ["co-op", "extraction"],
+    url: "https://buffdrive.com/cos?pt=cWFEVGVqUndMVFZBQzRaYUk3MnYvRkZyYjBoMFNqSklNaXRSTHpGdVNEUnhSSHBSSzJjOVBRPT0%3D",
+    img: "",
+    steamId: "1966720"
+  },
+  {
+    name: "Omori",
+    genre: "horror",
+    size: "1.81 GB",
+    rating: "4,8/10",
+    tags: ["psychological horror", "story-rich"],
+    url: "https://buffdrive.com/ry?pt=dmJlMXRrZkdHT1dXZ0VwTGpWazRhRXB2Y2pac1VGbE1abUpKTHpoWVdIQlRRMjF6Wm1jOVBRPT0%3D",
+    img: "",
+    steamId: "1150690"
+  },
+  
+  
+];
+
+function getImg(gm) {
+  if (gm.img) return gm.img;
+  if (gm.steamId) return "https://cdn.akamai.steamstatic.com/steam/apps/" + gm.steamId + "/capsule_231x87.jpg";
+  return "";
+}
+
+function render() {
+  var q = document.getElementById('search').value.toLowerCase();
+  var g = document.getElementById('genre').value;
+  var filtered = games.filter(function(gm) {
+    var matchQ = !q || gm.name.toLowerCase().indexOf(q) !== -1 || gm.tags.join(' ').indexOf(q) !== -1;
+    var matchG = !g || gm.genre === g;
+    return matchQ && matchG;
+  });
+  document.getElementById('count').textContent = filtered.length + ' game(s) found';
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var gm = filtered[i];
+    var taghtml = '';
+    for (var t = 0; t < gm.tags.length; t++) {
+      taghtml += '<span class="tag">' + gm.tags[t] + '</span>';
+    }
+    var imgSrc = getImg(gm);
+    html += '<tr>';
+    html += '<td class="thumb-cell"><img class="thumb" src="' + imgSrc + '" alt="' + gm.name + '" onerror="this.style.display=\'none\'"></td>';
+    html += '<td><b>' + gm.name + '</b><br>' + taghtml + '</td>';
+    html += '<td>' + gm.genre + '</td>';
+    html += '<td class="size">' + gm.size + '</td>';
+    html += '<td class="rating">&#9733; ' + gm.rating + '</td>';
+    html += '<td><span class="win-badge">&#x229E; Win</span></td>';
+    html += '<td><a class="dl" href="' + gm.url + '" target="_blank" rel="noopener">download</a></td>';
+    html += '</tr>';
   }
+  document.getElementById('tbody').innerHTML = html || '<tr><td colspan="7">no games found.</td></tr>';
+}
+
+render();
 </script>
 </body>
 </html>
