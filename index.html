@@ -329,6 +329,28 @@
     border: 1px solid rgba(128,128,128,0.4);
     display: inline-block;
   }
+
+  /* scrollbar */
+  :root {
+    --sb-width: 8px;
+    --sb-radius: 0px;
+    --sb-thumb: #888888;
+    --sb-thumb-hover: #555555;
+    --sb-track: #e0e0e0;
+    --sb-thumb-opacity: 1;
+  }
+  * { scrollbar-width: auto; scrollbar-color: var(--sb-thumb) var(--sb-track); }
+  ::-webkit-scrollbar { width: var(--sb-width); height: var(--sb-width); }
+  ::-webkit-scrollbar-track { background: var(--sb-track); border-radius: var(--sb-radius); }
+  ::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: var(--sb-radius); opacity: var(--sb-thumb-opacity); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--sb-thumb-hover); }
+
+  /* autohide scrollbar */
+  body.sb-autohide { overflow-y: scroll; }
+  body.sb-autohide::-webkit-scrollbar-thumb { transition: background 0.3s; background: transparent; }
+  body.sb-autohide:hover::-webkit-scrollbar-thumb { background: var(--sb-thumb); }
+  body.sb-autohide { scrollbar-color: transparent var(--sb-track); }
+  body.sb-autohide:hover { scrollbar-color: var(--sb-thumb) var(--sb-track); }
 </style>
 </head>
 <body>
@@ -361,8 +383,8 @@
       <input type="url" id="bg-url" placeholder="https://..." oninput="applyBgImage()">
     </div>
     <div class="cz-row">
-      <label>or upload</label>
-      <input type="file" id="bg-file" accept="image/*" onchange="handleBgFile(event)" style="font-size:11px;width:150px">
+      <label>or upload (jpg/png/gif)</label>
+      <input type="file" id="bg-file" accept="image/*,.gif" onchange="handleBgFile(event)" style="font-size:11px;width:150px">
     </div>
     <div class="cz-row">
       <label>blur amount</label>
@@ -388,7 +410,7 @@
       </select>
     </div>
     <button class="cz-btn" onclick="removeBg()">&#x2715; remove background</button>
-    <div class="cz-note">when a bg image is set, dark/light mode is disabled. divs use blur overlay instead.</div>
+    <div class="cz-note">when a bg image is set, divs use blur overlay. colors and dark/light mode still apply.</div>
   </div>
 
   <!-- light mode colors -->
@@ -463,6 +485,57 @@
     </div>
   </div>
 
+  <!-- scrollbar -->
+  <div class="cz-section">
+    <div class="cz-label">scrollbar</div>
+    <div class="cz-row">
+      <label>thickness</label>
+      <input type="range" id="sb-width" min="2" max="24" value="8" oninput="applyScrollbar()">
+      <span id="sb-width-val" style="font-size:11px;width:24px;text-align:right">8px</span>
+    </div>
+    <div class="cz-row">
+      <label>style</label>
+      <select id="sb-style" onchange="applyScrollbar()">
+        <option value="0">square</option>
+        <option value="4">rounded</option>
+        <option value="99">pill</option>
+      </select>
+    </div>
+    <div class="cz-row">
+      <label>thumb color</label>
+      <input type="color" id="sb-thumb" value="#888888" oninput="applyScrollbar()">
+      <div class="color-dot" style="background:#000000" onclick="setSbColor('sb-thumb','#000000')"></div>
+      <div class="color-dot" style="background:#ffffff" onclick="setSbColor('sb-thumb','#ffffff')"></div>
+      <div class="color-dot" style="background:#0078d7" onclick="setSbColor('sb-thumb','#0078d7')"></div>
+    </div>
+    <div class="cz-row">
+      <label>thumb hover</label>
+      <input type="color" id="sb-thumb-hover" value="#555555" oninput="applyScrollbar()">
+      <div class="color-dot" style="background:#222222" onclick="setSbColor('sb-thumb-hover','#222222')"></div>
+      <div class="color-dot" style="background:#aaaaaa" onclick="setSbColor('sb-thumb-hover','#aaaaaa')"></div>
+      <div class="color-dot" style="background:#4da6ff" onclick="setSbColor('sb-thumb-hover','#4da6ff')"></div>
+    </div>
+    <div class="cz-row">
+      <label>track color</label>
+      <input type="color" id="sb-track" value="#e0e0e0" oninput="applyScrollbar()">
+      <div class="color-dot" style="background:#ffffff" onclick="setSbColor('sb-track','#ffffff')"></div>
+      <div class="color-dot" style="background:#111111" onclick="setSbColor('sb-track','#111111')"></div>
+      <div class="color-dot" style="background:#f5f5f5" onclick="setSbColor('sb-track','#f5f5f5')"></div>
+    </div>
+    <div class="cz-row">
+      <label>thumb opacity</label>
+      <input type="range" id="sb-opacity" min="10" max="100" value="100" oninput="applyScrollbar()">
+      <span id="sb-opacity-val" style="font-size:11px;width:24px;text-align:right">100%</span>
+    </div>
+    <div class="cz-row">
+      <label>hide when idle</label>
+      <select id="sb-autohide" onchange="applyScrollbar()">
+        <option value="0">always show</option>
+        <option value="1">fade when idle</option>
+      </select>
+    </div>
+  </div>
+
   <!-- presets -->
   <div class="cz-section">
     <div class="cz-label">presets</div>
@@ -471,6 +544,11 @@
     <button class="cz-btn" onclick="applyPreset('forest')">&#9632; forest green</button>
     <button class="cz-btn" onclick="applyPreset('rose')">&#9632; rose</button>
     <button class="cz-btn" onclick="applyPreset('amber')">&#9632; amber terminal</button>
+    <button class="cz-btn" onclick="applyPreset('ocean')">&#9632; ocean</button>
+    <button class="cz-btn" onclick="applyPreset('neon')">&#9632; neon</button>
+    <button class="cz-btn" onclick="applyPreset('slate')">&#9646; slate</button>
+    <button class="cz-btn" onclick="applyPreset('sakura')">&#9632; sakura</button>
+    <button class="cz-btn" onclick="applyPreset('hacker')">&#9646; hacker</button>
   </div>
 
   <button class="cz-btn" onclick="resetAll()">&#x21BA; reset everything</button>
@@ -523,7 +601,7 @@ var games = [
   { name: "People Playground", genre: "simulation", size: "211 MB", rating: "4,8/10", tags: ["physics", "gore"], url: "https://buffdrive.com/cpx?pt=OU5pdXJRaTJUaDlEOWl0VExBTUxWamd5Y2pJck9VdENVRWhaY0RNMGVrMHlZWEpHZDFFOVBRPT0%3D", img: "", steamId: "1118200" },
   { name: "Lethal Company", genre: "horror", size: "706 MB", rating: "4,8/10", tags: ["co-op", "extraction"], url: "https://buffdrive.com/cos?pt=cWFEVGVqUndMVFZBQzRaYUk3MnYvRkZyYjBoMFNqSklNaXRSTHpGdVNEUnhSSHBSSzJjOVBRPT0%3D", img: "", steamId: "1966720" },
   { name: "Omori", genre: "horror", size: "1.81 GB", rating: "4,8/10", tags: ["psychological horror", "story-rich"], url: "https://buffdrive.com/ry?pt=dmJlMXRrZkdHT1dXZ0VwTGpWazRhRXB2Y2pac1VGbE1abUpKTHpoWVdIQlRRMjF6Wm1jOVBRPT0%3D", img: "", steamId: "1150690" },
-  { name: "Among Us", genre: "multiplayer", size: "677 MB", rating: "4,5/10", tags: ["strategy", "party game"], url: "https://buffdrive.com/9P7?pt=RVBmV0FQVXovR0s5ckpid2ZpcnlUVkpyVUZadmJHcHZlWEo2WTI1aWNXMHpWa2hRT0VFOVBRPT0%3D", img: "", steamId: "945360" },
+  { name: "Among Us", genre: "multiplayer", size: "677 MB", rating: "4,5/10", tags: ["strategy", "party game"], url: "https://buffdrive.com/9P7?pt=RVBmV0FQVXovR0s5ckpid2ZpcnlUVkpyVUZadmxHcHZlWEo2WTI1aWNXMHpWa2hRT0FROVBRPT0%3D", img: "", steamId: "945360" },
   { name: "Hollow Knight", genre: "action", size: "1.31 GB", rating: "4,9/10", tags: ["soulslike", "exploration"], url: "https://buffdrive.com/4xo?pt=Vk8vYXl3R3pxRUQ5VFFEQUN4YnpXbVkyYVZsV1ZIbHhiVWRSUzBGNFJXOXFia3R6VGxFOVBRPT0%3D", img: "", steamId: "367520" },
   { name: "Universe Sandbox", genre: "simulation", size: "1.12 GB", rating: "4,8/10", tags: ["space", "physics"], url: "https://buffdrive.com/9N2?pt=dURnZm1XWmYyMTlZRzNET0RRRGowM0VyYzBOUk5EVTNRV2xNUVVVNFRrRkJhSGxzYzBFOVBRPT0%3D", img: "", steamId: "230290" },
   { name: "Cuphead", genre: "action", size: "4.87 GB", rating: "4,8/10", tags: ["boss rush", "hand-drawn animation"], url: "https://buffdrive.com/s2?pt=VDBEUC9VU294NjFBM29Tek4zTnJxVzFDUzFSS09FaFBRbmhKY1hWTmFuRmlhbEZxY1VFOVBRPT0%3D", img: "", steamId: "268910" },
@@ -568,13 +646,109 @@ function render() {
 var dark = false;
 var hasBgImage = false;
 
+/* ── localStorage helpers ── */
+var LS_KEY = 'carbonstore_customize';
+
+function saveToLS() {
+  try {
+    var ids = [
+      'lc-bg','lc-fg','lc-sub','lc-th-bg','lc-th-fg','lc-hover','lc-tag','lc-dl-bg','lc-dl-fg','lc-win','lc-border',
+      'dc-bg','dc-fg','dc-sub','dc-th-bg','dc-th-fg','dc-hover','dc-tag','dc-dl-bg','dc-dl-fg','dc-win','dc-border',
+      'font-sel','font-size-range','padding-range','blur-range','overlay-range','overlay-color','bg-size','custom-title','custom-subtitle',
+      'sb-width','sb-style','sb-thumb','sb-thumb-hover','sb-track','sb-opacity','sb-autohide'
+    ];
+    var data = { dark: dark, hasBgImage: hasBgImage };
+    ids.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    // store bg as dataURL only if it came from file upload (starts with data:)
+    var bgImg = document.body.style.backgroundImage;
+    if (bgImg && bgImg !== 'none') {
+      var match = bgImg.match(/url\("?(.+?)"?\)/);
+      if (match && match[1]) {
+        // only store data: URIs and plain URLs (not too large for LS)
+        var url = match[1];
+        if (url.startsWith('data:')) {
+          // only save if under ~4MB to avoid LS quota errors
+          if (url.length < 4000000) data['_bgData'] = url;
+        } else {
+          data['_bgUrl'] = url;
+        }
+      }
+    }
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadFromLS() {
+  try {
+    var raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    var data = JSON.parse(raw);
+
+    var ids = [
+      'lc-bg','lc-fg','lc-sub','lc-th-bg','lc-th-fg','lc-hover','lc-tag','lc-dl-bg','lc-dl-fg','lc-win','lc-border',
+      'dc-bg','dc-fg','dc-sub','dc-th-bg','dc-th-fg','dc-hover','dc-tag','dc-dl-bg','dc-dl-fg','dc-win','dc-border',
+      'font-sel','font-size-range','padding-range','blur-range','overlay-range','overlay-color','bg-size','custom-title','custom-subtitle',
+      'sb-width','sb-style','sb-thumb','sb-thumb-hover','sb-track','sb-opacity','sb-autohide'
+    ];
+    ids.forEach(function(id) {
+      if (data[id] !== undefined) {
+        var el = document.getElementById(id);
+        if (el) el.value = data[id];
+      }
+    });
+
+    // restore display labels
+    if (data['font-size-range']) document.getElementById('font-size-val').textContent = data['font-size-range'] + 'px';
+    if (data['padding-range'])   document.getElementById('padding-val').textContent   = data['padding-range']   + 'px';
+    if (data['blur-range'])      document.getElementById('blur-val').textContent      = data['blur-range']      + 'px';
+    if (data['overlay-range'])   document.getElementById('overlay-val').textContent   = data['overlay-range']   + '%';
+    if (data['sb-width'])        document.getElementById('sb-width-val').textContent  = data['sb-width']        + 'px';
+    if (data['sb-opacity'])      document.getElementById('sb-opacity-val').textContent= data['sb-opacity']      + '%';
+
+    // restore dark mode
+    if (data.dark) {
+      dark = true;
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('icon-sun').style.display = 'block';
+      document.getElementById('icon-moon').style.display = 'none';
+    }
+
+    // restore background
+    if (data['_bgData']) {
+      setBodyBg(data['_bgData']);
+    } else if (data['_bgUrl']) {
+      document.getElementById('bg-url').value = data['_bgUrl'];
+      setBodyBg(data['_bgUrl']);
+    }
+
+    // restore title / subtitle / font / padding / scrollbar
+    applyTitle();
+    applySubtitle();
+    applyFont();
+    applyPadding();
+    applyScrollbar();
+    applyCustomColors();
+  } catch(e) {}
+}
+
+/* wrap every mutating function to also call saveToLS */
+function withSave(fn) {
+  return function() {
+    fn.apply(this, arguments);
+    saveToLS();
+  };
+}
+
 function toggleTheme() {
-  if (hasBgImage) return;
   dark = !dark;
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
   document.getElementById('icon-sun').style.display = dark ? 'block' : 'none';
   document.getElementById('icon-moon').style.display = dark ? 'none' : 'block';
   applyCustomColors();
+  saveToLS();
 }
 
 function toggleCustomize() {
@@ -587,6 +761,7 @@ function applyBgImage() {
   var url = document.getElementById('bg-url').value.trim();
   if (!url) return;
   setBodyBg(url);
+  saveToLS();
 }
 
 function handleBgFile(e) {
@@ -596,6 +771,7 @@ function handleBgFile(e) {
   reader.onload = function(ev) {
     document.getElementById('bg-url').value = '';
     setBodyBg(ev.target.result);
+    saveToLS();
   };
   reader.readAsDataURL(file);
 }
@@ -607,13 +783,13 @@ function setBodyBg(url) {
   document.body.style.backgroundRepeat = size === 'auto' ? 'repeat' : 'no-repeat';
   hasBgImage = true;
   document.body.classList.add('has-bg-image');
-  document.getElementById('theme-toggle').style.display = 'none';
   applyOverlay();
 }
 
 function applyBlur(val) {
   document.getElementById('blur-val').textContent = val + 'px';
   document.body.style.setProperty('--blur-amount', val + 'px');
+  saveToLS();
 }
 
 function applyOverlay() {
@@ -624,6 +800,7 @@ function applyOverlay() {
   var g = parseInt(hex.slice(3,5),16);
   var b = parseInt(hex.slice(5,7),16);
   document.body.style.setProperty('--blur-overlay', 'rgba('+r+','+g+','+b+','+opacity+')');
+  saveToLS();
 }
 
 function removeBg() {
@@ -632,7 +809,7 @@ function removeBg() {
   document.getElementById('bg-file').value = '';
   hasBgImage = false;
   document.body.classList.remove('has-bg-image');
-  document.getElementById('theme-toggle').style.display = 'flex';
+  saveToLS();
 }
 
 /* ── custom colors ── */
@@ -642,38 +819,31 @@ function setColor(id, val) {
 }
 
 function applyCustomColors() {
-  var isDark = dark && !hasBgImage;
-  var prefix = isDark ? 'dc' : 'lc';
+  var prefix = dark ? 'dc' : 'lc';
   var root = document.documentElement;
 
   function g(id) { return document.getElementById(id).value; }
 
-  if (!hasBgImage) {
-    root.style.setProperty('--bg', g(prefix+'-bg'));
-    root.style.setProperty('--fg', g(prefix+'-fg'));
-    root.style.setProperty('--sub', g(prefix+'-sub'));
-    root.style.setProperty('--th-bg', g(prefix+'-th-bg'));
-    root.style.setProperty('--th-fg', g(prefix+'-th-fg'));
-    root.style.setProperty('--row-hover', g(prefix+'-hover'));
-    root.style.setProperty('--tag-bg', g(prefix+'-tag'));
-    root.style.setProperty('--dl-bg', g(prefix+'-dl-bg'));
-    root.style.setProperty('--dl-fg', g(prefix+'-dl-fg'));
-    root.style.setProperty('--win-color', g(prefix+'-win'));
-    root.style.setProperty('--td-border', g(prefix+'-border'));
-    root.style.setProperty('--footer-border', g(prefix+'-border'));
-    root.style.setProperty('--thumb-border', g(prefix+'-border'));
-    root.style.setProperty('--input-border', g(prefix+'-fg'));
-    var sub = g(prefix+'-sub');
-    root.style.setProperty('--size-color', sub);
-    root.style.setProperty('--rating-color', sub);
-    root.style.setProperty('--count-color', sub);
-    root.style.setProperty('--footer-color', sub);
-  } else {
-    /* when bg image is active, only update accent and button colors */
-    root.style.setProperty('--win-color', g('lc-win'));
-    root.style.setProperty('--dl-bg', g('lc-dl-bg'));
-    root.style.setProperty('--dl-fg', g('lc-dl-fg'));
-  }
+  root.style.setProperty('--bg', g(prefix+'-bg'));
+  root.style.setProperty('--fg', g(prefix+'-fg'));
+  root.style.setProperty('--sub', g(prefix+'-sub'));
+  root.style.setProperty('--th-bg', g(prefix+'-th-bg'));
+  root.style.setProperty('--th-fg', g(prefix+'-th-fg'));
+  root.style.setProperty('--row-hover', g(prefix+'-hover'));
+  root.style.setProperty('--tag-bg', g(prefix+'-tag'));
+  root.style.setProperty('--dl-bg', g(prefix+'-dl-bg'));
+  root.style.setProperty('--dl-fg', g(prefix+'-dl-fg'));
+  root.style.setProperty('--win-color', g(prefix+'-win'));
+  root.style.setProperty('--td-border', g(prefix+'-border'));
+  root.style.setProperty('--footer-border', g(prefix+'-border'));
+  root.style.setProperty('--thumb-border', g(prefix+'-border'));
+  root.style.setProperty('--input-border', g(prefix+'-fg'));
+  var sub = g(prefix+'-sub');
+  root.style.setProperty('--size-color', sub);
+  root.style.setProperty('--rating-color', sub);
+  root.style.setProperty('--count-color', sub);
+  root.style.setProperty('--footer-color', sub);
+  saveToLS();
 }
 
 /* ── font ── */
@@ -683,6 +853,7 @@ function applyFont() {
   document.getElementById('font-size-val').textContent = size + 'px';
   document.body.style.fontFamily = font;
   document.body.style.fontSize = size + 'px';
+  saveToLS();
 }
 
 /* ── padding ── */
@@ -690,12 +861,54 @@ function applyPadding() {
   var val = document.getElementById('padding-range').value;
   document.getElementById('padding-val').textContent = val + 'px';
   document.body.style.padding = val + 'px';
+  saveToLS();
+}
+
+/* ── scrollbar ── */
+function setSbColor(id, val) {
+  document.getElementById(id).value = val;
+  applyScrollbar();
+}
+
+function applyScrollbar() {
+  var width   = document.getElementById('sb-width').value;
+  var radius  = document.getElementById('sb-style').value;
+  var thumb   = document.getElementById('sb-thumb').value;
+  var tHover  = document.getElementById('sb-thumb-hover').value;
+  var track   = document.getElementById('sb-track').value;
+  var opacity = document.getElementById('sb-opacity').value;
+  var hide    = document.getElementById('sb-autohide').value;
+
+  document.getElementById('sb-width-val').textContent   = width + 'px';
+  document.getElementById('sb-opacity-val').textContent = opacity + '%';
+
+  var root = document.documentElement;
+  root.style.setProperty('--sb-width', width + 'px');
+  root.style.setProperty('--sb-radius', radius + 'px');
+  root.style.setProperty('--sb-thumb', thumb);
+  root.style.setProperty('--sb-thumb-hover', tHover);
+  root.style.setProperty('--sb-track', track);
+  root.style.setProperty('--sb-thumb-opacity', (parseInt(opacity) / 100).toFixed(2));
+
+  if (hide === '1') {
+    document.body.classList.add('sb-autohide');
+  } else {
+    document.body.classList.remove('sb-autohide');
+  }
+
+  /* firefox scrollbar-width keyword based on thickness */
+  var sbWidth = parseInt(width);
+  var ffWidth = sbWidth <= 4 ? 'thin' : 'auto';
+  document.documentElement.style.setProperty('scrollbar-width', hide === '1' ? 'thin' : ffWidth);
+
+  saveToLS();
 }
 
 /* ── title / subtitle ── */
 function applyTitle() {
   var v = document.getElementById('custom-title').value;
   document.getElementById('site-title').textContent = v || 'carbonstore';
+  saveToLS();
 }
 function applySubtitle() {
   var v = document.getElementById('custom-subtitle').value;
@@ -705,29 +918,61 @@ function applySubtitle() {
   } else {
     el.innerHTML = 'a simple game store for <span class="win-badge">Windows</span>. click download to get a game.';
   }
+  saveToLS();
 }
 
 /* ── presets ── */
+// sb: { width, style (0=square/4=rounded/99=pill), thumb, thumbHover, track, opacity, autohide (0/1) }
 var presets = {
   default: {
     lc: { bg:'#ffffff', fg:'#000000', sub:'#555555', 'th-bg':'#000000', 'th-fg':'#ffffff', hover:'#f0f0f0', tag:'#e0e0e0', 'dl-bg':'#000000', 'dl-fg':'#ffffff', win:'#0078d7', border:'#cccccc' },
-    dc: { bg:'#000000', fg:'#ffffff', sub:'#aaaaaa', 'th-bg':'#ffffff', 'th-fg':'#000000', hover:'#111111', tag:'#222222', 'dl-bg':'#ffffff', 'dl-fg':'#000000', win:'#4da6ff', border:'#333333' }
+    dc: { bg:'#000000', fg:'#ffffff', sub:'#aaaaaa', 'th-bg':'#ffffff', 'th-fg':'#000000', hover:'#111111', tag:'#222222', 'dl-bg':'#ffffff', 'dl-fg':'#000000', win:'#4da6ff', border:'#333333' },
+    sb: { width:8, style:'0', thumb:'#888888', thumbHover:'#555555', track:'#e0e0e0', opacity:100, autohide:'0' }
   },
   midnight: {
     lc: { bg:'#eef2ff', fg:'#1a1a4e', sub:'#4455aa', 'th-bg':'#1a1a4e', 'th-fg':'#eef2ff', hover:'#dde4ff', tag:'#c8d4ff', 'dl-bg':'#1a1a4e', 'dl-fg':'#eef2ff', win:'#0055cc', border:'#aabbdd' },
-    dc: { bg:'#070714', fg:'#aabbff', sub:'#6677cc', 'th-bg':'#aabbff', 'th-fg':'#070714', hover:'#0d0d2a', tag:'#111133', 'dl-bg':'#aabbff', 'dl-fg':'#070714', win:'#5599ff', border:'#222244' }
+    dc: { bg:'#070714', fg:'#aabbff', sub:'#6677cc', 'th-bg':'#aabbff', 'th-fg':'#070714', hover:'#0d0d2a', tag:'#111133', 'dl-bg':'#aabbff', 'dl-fg':'#070714', win:'#5599ff', border:'#222244' },
+    sb: { width:6, style:'4', thumb:'#5599ff', thumbHover:'#aabbff', track:'#0d0d2a', opacity:90, autohide:'0' }
   },
   forest: {
     lc: { bg:'#f0f7f0', fg:'#1a3a1a', sub:'#446644', 'th-bg':'#1a3a1a', 'th-fg':'#f0f7f0', hover:'#ddeedd', tag:'#c0ddcc', 'dl-bg':'#1a3a1a', 'dl-fg':'#f0f7f0', win:'#228833', border:'#99bb99' },
-    dc: { bg:'#060e06', fg:'#aaddaa', sub:'#557755', 'th-bg':'#aaddaa', 'th-fg':'#060e06', hover:'#0a150a', tag:'#0d1a0d', 'dl-bg':'#aaddaa', 'dl-fg':'#060e06', win:'#44cc66', border:'#1a3a1a' }
+    dc: { bg:'#060e06', fg:'#aaddaa', sub:'#557755', 'th-bg':'#aaddaa', 'th-fg':'#060e06', hover:'#0a150a', tag:'#0d1a0d', 'dl-bg':'#aaddaa', 'dl-fg':'#060e06', win:'#44cc66', border:'#1a3a1a' },
+    sb: { width:7, style:'4', thumb:'#44cc66', thumbHover:'#aaddaa', track:'#0a150a', opacity:85, autohide:'1' }
   },
   rose: {
     lc: { bg:'#fff5f7', fg:'#3a1a22', sub:'#aa4466', 'th-bg':'#3a1a22', 'th-fg':'#fff5f7', hover:'#ffe0e8', tag:'#ffc8d8', 'dl-bg':'#cc3355', 'dl-fg':'#ffffff', win:'#cc3355', border:'#ddaabb' },
-    dc: { bg:'#0f0408', fg:'#ffaacc', sub:'#cc6688', 'th-bg':'#ffaacc', 'th-fg':'#0f0408', hover:'#1a080e', tag:'#220a10', 'dl-bg':'#ffaacc', 'dl-fg':'#0f0408', win:'#ff6699', border:'#3a1422' }
+    dc: { bg:'#0f0408', fg:'#ffaacc', sub:'#cc6688', 'th-bg':'#ffaacc', 'th-fg':'#0f0408', hover:'#1a080e', tag:'#220a10', 'dl-bg':'#ffaacc', 'dl-fg':'#0f0408', win:'#ff6699', border:'#3a1422' },
+    sb: { width:6, style:'99', thumb:'#ff6699', thumbHover:'#ffaacc', track:'#220a10', opacity:90, autohide:'1' }
   },
   amber: {
     lc: { bg:'#fff8e8', fg:'#2a1800', sub:'#886622', 'th-bg':'#2a1800', 'th-fg':'#fff8e8', hover:'#fff0c0', tag:'#ffe8a0', 'dl-bg':'#aa6600', 'dl-fg':'#fff8e8', win:'#cc8800', border:'#ddbb77' },
-    dc: { bg:'#0a0500', fg:'#ffcc66', sub:'#aa8833', 'th-bg':'#ffcc66', 'th-fg':'#0a0500', hover:'#150a00', tag:'#1a0e00', 'dl-bg':'#ffcc66', 'dl-fg':'#0a0500', win:'#ffaa00', border:'#332200' }
+    dc: { bg:'#0a0500', fg:'#ffcc66', sub:'#aa8833', 'th-bg':'#ffcc66', 'th-fg':'#0a0500', hover:'#150a00', tag:'#1a0e00', 'dl-bg':'#ffcc66', 'dl-fg':'#0a0500', win:'#ffaa00', border:'#332200' },
+    sb: { width:10, style:'0', thumb:'#ffaa00', thumbHover:'#ffcc66', track:'#1a0e00', opacity:100, autohide:'0' }
+  },
+  ocean: {
+    lc: { bg:'#eaf4fb', fg:'#0a2a3a', sub:'#2a6688', 'th-bg':'#0a2a3a', 'th-fg':'#eaf4fb', hover:'#cce8f8', tag:'#a8d8f0', 'dl-bg':'#0a6694', 'dl-fg':'#ffffff', win:'#0099cc', border:'#88ccee' },
+    dc: { bg:'#020d14', fg:'#88ddf8', sub:'#3388aa', 'th-bg':'#88ddf8', 'th-fg':'#020d14', hover:'#041824', tag:'#041020', 'dl-bg':'#88ddf8', 'dl-fg':'#020d14', win:'#00ccff', border:'#0a2a3a' },
+    sb: { width:8, style:'99', thumb:'#0099cc', thumbHover:'#00ccff', track:'#cce8f8', opacity:80, autohide:'1' }
+  },
+  neon: {
+    lc: { bg:'#0d0d0d', fg:'#00ff88', sub:'#00cc66', 'th-bg':'#00ff88', 'th-fg':'#0d0d0d', hover:'#111111', tag:'#0a2a1a', 'dl-bg':'#00ff88', 'dl-fg':'#0d0d0d', win:'#ff00aa', border:'#004422' },
+    dc: { bg:'#0d0d0d', fg:'#00ff88', sub:'#00cc66', 'th-bg':'#00ff88', 'th-fg':'#0d0d0d', hover:'#111111', tag:'#0a2a1a', 'dl-bg':'#00ff88', 'dl-fg':'#0d0d0d', win:'#ff00aa', border:'#004422' },
+    sb: { width:4, style:'0', thumb:'#00ff88', thumbHover:'#ff00aa', track:'#0a2a1a', opacity:100, autohide:'0' }
+  },
+  slate: {
+    lc: { bg:'#f4f5f7', fg:'#1e2229', sub:'#5a6273', 'th-bg':'#1e2229', 'th-fg':'#f4f5f7', hover:'#e4e6ea', tag:'#d0d4dc', 'dl-bg':'#3d4555', 'dl-fg':'#ffffff', win:'#5b7cfa', border:'#c0c4cc' },
+    dc: { bg:'#12151a', fg:'#c8cdd8', sub:'#7a8299', 'th-bg':'#c8cdd8', 'th-fg':'#12151a', hover:'#1c2029', tag:'#1e2330', 'dl-bg':'#c8cdd8', 'dl-fg':'#12151a', win:'#5b7cfa', border:'#2a2f3a' },
+    sb: { width:6, style:'4', thumb:'#5b7cfa', thumbHover:'#8fa0fc', track:'#1e2330', opacity:80, autohide:'1' }
+  },
+  sakura: {
+    lc: { bg:'#fff0f5', fg:'#2d1020', sub:'#996688', 'th-bg':'#e8a0c0', 'th-fg':'#2d1020', hover:'#ffe0ee', tag:'#ffd0e8', 'dl-bg':'#e8a0c0', 'dl-fg':'#2d1020', win:'#cc4488', border:'#f0c0d8' },
+    dc: { bg:'#1a0510', fg:'#ffcce0', sub:'#cc88aa', 'th-bg':'#ffcce0', 'th-fg':'#1a0510', hover:'#250818', tag:'#200614', 'dl-bg':'#ffcce0', 'dl-fg':'#1a0510', win:'#ff66aa', border:'#3a1028' },
+    sb: { width:5, style:'99', thumb:'#e8a0c0', thumbHover:'#ff66aa', track:'#ffd0e8', opacity:75, autohide:'1' }
+  },
+  hacker: {
+    lc: { bg:'#0c0c0c', fg:'#33ff33', sub:'#229922', 'th-bg':'#33ff33', 'th-fg':'#0c0c0c', hover:'#0a1a0a', tag:'#0a1a0a', 'dl-bg':'#33ff33', 'dl-fg':'#0c0c0c', win:'#33ff33', border:'#115511' },
+    dc: { bg:'#0c0c0c', fg:'#33ff33', sub:'#229922', 'th-bg':'#33ff33', 'th-fg':'#0c0c0c', hover:'#0a1a0a', tag:'#0a1a0a', 'dl-bg':'#33ff33', 'dl-fg':'#0c0c0c', win:'#33ff33', border:'#115511' },
+    sb: { width:3, style:'0', thumb:'#33ff33', thumbHover:'#88ff88', track:'#0a1a0a', opacity:100, autohide:'0' }
   }
 };
 
@@ -742,6 +987,20 @@ function applyPreset(name) {
   }
   setP('lc', p.lc);
   setP('dc', p.dc);
+  // apply scrollbar preset
+  if (p.sb) {
+    var sb = p.sb;
+    document.getElementById('sb-width').value       = sb.width;
+    document.getElementById('sb-width-val').textContent = sb.width + 'px';
+    document.getElementById('sb-style').value       = sb.style;
+    document.getElementById('sb-thumb').value       = sb.thumb;
+    document.getElementById('sb-thumb-hover').value = sb.thumbHover;
+    document.getElementById('sb-track').value       = sb.track;
+    document.getElementById('sb-opacity').value     = sb.opacity;
+    document.getElementById('sb-opacity-val').textContent = sb.opacity + '%';
+    document.getElementById('sb-autohide').value    = sb.autohide;
+    applyScrollbar();
+  }
   applyCustomColors();
 }
 
@@ -762,14 +1021,27 @@ function resetAll() {
   document.body.style.fontFamily = '';
   document.body.style.fontSize = '';
   document.body.style.padding = '10px';
+  document.getElementById('sb-width').value = 8;
+  document.getElementById('sb-width-val').textContent = '8px';
+  document.getElementById('sb-style').value = '0';
+  document.getElementById('sb-thumb').value = '#888888';
+  document.getElementById('sb-thumb-hover').value = '#555555';
+  document.getElementById('sb-track').value = '#e0e0e0';
+  document.getElementById('sb-opacity').value = 100;
+  document.getElementById('sb-opacity-val').textContent = '100%';
+  document.getElementById('sb-autohide').value = '0';
   applyTitle(); applySubtitle();
+  applyScrollbar();
   dark = false;
   document.documentElement.setAttribute('data-theme', '');
   document.getElementById('icon-sun').style.display = 'none';
   document.getElementById('icon-moon').style.display = 'block';
   document.documentElement.style.cssText = '';
+  try { localStorage.removeItem(LS_KEY); } catch(e) {}
 }
 
+// init
+loadFromLS();
 render();
 </script>
 </body>
