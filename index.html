@@ -5,67 +5,118 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>carbonstore</title>
 <style>
+  :root {
+    --bg: #ffffff;
+    --fg: #000000;
+    --sub: #555;
+    --border: #000;
+    --th-bg: #000;
+    --th-fg: #fff;
+    --row-hover: #f0f0f0;
+    --thumb-border: #ccc;
+    --thumb-bg: #eee;
+    --tag-bg: #e0e0e0;
+    --dl-bg: #000;
+    --dl-fg: #fff;
+    --dl-hover: #444;
+    --size-color: #555;
+    --rating-color: #888;
+    --count-color: #555;
+    --footer-border: #ccc;
+    --footer-color: #888;
+    --input-border: #000;
+    --td-border: #ccc;
+    --win-color: #0078d7;
+  }
+  [data-theme="dark"] {
+    --bg: #000000;
+    --fg: #ffffff;
+    --sub: #aaa;
+    --border: #fff;
+    --th-bg: #fff;
+    --th-fg: #000;
+    --row-hover: #111;
+    --thumb-border: #444;
+    --thumb-bg: #222;
+    --tag-bg: #222;
+    --dl-bg: #fff;
+    --dl-fg: #000;
+    --dl-hover: #bbb;
+    --size-color: #aaa;
+    --rating-color: #888;
+    --count-color: #aaa;
+    --footer-border: #333;
+    --footer-color: #666;
+    --input-border: #fff;
+    --td-border: #333;
+    --win-color: #4da6ff;
+  }
   body {
-    background: #ffffff;
-    color: #000000;
+    background: var(--bg);
+    color: var(--fg);
     font-family: monospace;
     font-size: 14px;
     margin: 0;
     padding: 10px;
+    transition: background 0.2s, color 0.2s;
   }
   h1 {
     font-size: 20px;
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid var(--fg);
     padding-bottom: 4px;
     margin-bottom: 4px;
   }
   p.sub {
     margin: 0 0 14px 0;
-    color: #555;
+    color: var(--sub);
     font-size: 12px;
   }
   input[type="text"] {
     width: 200px;
     padding: 3px 5px;
-    border: 1px solid #000;
+    border: 1px solid var(--input-border);
     font-family: monospace;
     font-size: 13px;
     margin-bottom: 10px;
+    background: var(--bg);
+    color: var(--fg);
   }
   select {
     padding: 3px 5px;
-    border: 1px solid #000;
+    border: 1px solid var(--input-border);
     font-family: monospace;
     font-size: 13px;
     margin-bottom: 10px;
     margin-left: 6px;
+    background: var(--bg);
+    color: var(--fg);
   }
   table {
     width: 100%;
     border-collapse: collapse;
   }
   th {
-    background: #000;
-    color: #fff;
+    background: var(--th-bg);
+    color: var(--th-fg);
     text-align: left;
     padding: 4px 8px;
     font-weight: normal;
   }
   td {
     padding: 6px 8px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--td-border);
     vertical-align: middle;
   }
   tr:hover td {
-    background: #f0f0f0;
+    background: var(--row-hover);
   }
   .thumb {
     width: 92px;
     height: 43px;
     object-fit: cover;
     display: block;
-    border: 1px solid #ccc;
-    background: #eee;
+    border: 1px solid var(--thumb-border);
+    background: var(--thumb-bg);
   }
   .thumb-cell {
     width: 100px;
@@ -73,14 +124,15 @@
   }
   .tag {
     display: inline-block;
-    background: #e0e0e0;
+    background: var(--tag-bg);
+    color: var(--fg);
     font-size: 11px;
     padding: 1px 5px;
     margin-right: 3px;
   }
   a.dl {
-    color: #fff;
-    background: #000;
+    color: var(--dl-fg);
+    background: var(--dl-bg);
     padding: 3px 10px;
     text-decoration: none;
     font-size: 12px;
@@ -88,26 +140,62 @@
     white-space: nowrap;
   }
   a.dl:hover {
-    background: #444;
+    background: var(--dl-hover);
   }
   .win-badge {
     font-size: 11px;
-    color: #0078d7;
+    color: var(--win-color);
     font-weight: bold;
   }
-  .size { color: #555; font-size: 12px; }
-  .rating { color: #888; font-size: 12px; white-space: nowrap; }
-  #count { font-size: 12px; color: #555; margin-bottom: 6px; }
+  .size { color: var(--size-color); font-size: 12px; }
+  .rating { color: var(--rating-color); font-size: 12px; white-space: nowrap; }
+  #count { font-size: 12px; color: var(--count-color); margin-bottom: 6px; }
   footer {
     margin-top: 20px;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid var(--footer-border);
     padding-top: 6px;
     font-size: 11px;
-    color: #888;
+    color: var(--footer-color);
+  }
+  #theme-toggle {
+    position: fixed;
+    top: 12px;
+    right: 14px;
+    background: var(--dl-bg);
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  #theme-toggle:hover {
+    background: var(--dl-hover);
+  }
+  #theme-toggle svg {
+    display: block;
   }
 </style>
 </head>
 <body>
+
+<button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">
+  <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+    <circle cx="12" cy="12" r="4"/>
+    <line x1="12" y1="2" x2="12" y2="5"/>
+    <line x1="12" y1="19" x2="12" y2="22"/>
+    <line x1="2" y1="12" x2="5" y2="12"/>
+    <line x1="19" y1="12" x2="22" y2="12"/>
+    <line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/>
+    <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+    <line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/>
+    <line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/>
+  </svg>
+  <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+  </svg>
+</button>
 
 <h1>carbonstore</h1>
 <p class="sub">a simple game store for <span class="win-badge">Windows</span>. click download to get a game.</p>
@@ -146,121 +234,18 @@
 <footer>basic game store. windows only.</footer>
 
 <script>
-// Add your games here. Copy the template below and fill in your own info.
-// img: use a direct image URL, or set steamId to your game's Steam app ID for an auto thumbnail.
-// Leave steamId as null if you have a custom img URL.
-
 var games = [
-  {
-    name: "Deltarune",
-    genre: "rpg",
-    size: "504 MB",
-    rating: "4,8/5",
-    tags: ["bullet hell", "story-rich"],
-    url: "https://buffdrive.com/7cn?pt=ZWVncDNOeDVVNjN1T3FoRzE4MTVlWGQyWWtsVVZFWmxOSHBxYm1GS1YxRlNXSE51UzBFOVBRPT0%3D",
-    img: "",
-    steamId: "1671210"
-  },
-  {
-    name: "Undertale",
-    genre: "rpg",
-    size: "172 MB",
-    rating: "4,9/10",
-    tags: ["pixel art", "choices matter"],
-    url: "https://buffdrive.com/rv?pt=OCtKMlJkNXVsTGlJWDBLUjN3Wk0yVWxITlVJclRFaHVURVUyWm1WaVVIZExaa1UwUjJjOVBRPT0%3D",
-    img: "",
-    steamId: "391540"
-  },
-  {
-    name: "Ultrakill",
-    genre: "action",
-    size: "3.3 GB",
-    rating: "4,9/10",
-    tags: ["pixel art", "choices matter"],
-    url: "https://buffdrive.com/cqa?pt=a210Nm5IVVpmL0tONXpld2oxTGtIRFZWZHl0b1NVRXdSSHBaT0UxT1NrOWhTbXhvTWtFOVBRPT0%3D",
-    img: "",
-    steamId: "1229490"
-  },
-  {
-    name: "Geometry Dash",
-    genre: "action",
-    size: "204 MB",
-    rating: "4,7/10",
-    tags: ["rhythm game", "level editor"],
-    url: "https://buffdrive.com/4wo?pt=cm5XR1JFVXp6UU9IQmxFVjVyR2IwMVJvYW5sTU9VTkJSamx6Ym5CS1JtSkxiVlJyYmxFOVBRPT0%3D",
-    img: "",
-    steamId: "322170"
-  },
-  {
-    name: "People Playground",
-    genre: "simulation",
-    size: "211 MB",
-    rating: "4,8/10",
-    tags: ["physics", "gore"],
-    url: "https://buffdrive.com/cpx?pt=OU5pdXJRaTJUaDlEOWl0VExBTUxWamd5Y2pJck9VdENVRWhaY0RNMGVrMHlZWEpHZDFFOVBRPT0%3D",
-    img: "",
-    steamId: "1118200"
-  },
-  {
-    name: "Lethal Company",
-    genre: "horror",
-    size: "706 MB",
-    rating: "4,8/10",
-    tags: ["co-op", "extraction"],
-    url: "https://buffdrive.com/cos?pt=cWFEVGVqUndMVFZBQzRaYUk3MnYvRkZyYjBoMFNqSklNaXRSTHpGdVNEUnhSSHBSSzJjOVBRPT0%3D",
-    img: "",
-    steamId: "1966720"
-  },
-  {
-    name: "Omori",
-    genre: "horror",
-    size: "1.81 GB",
-    rating: "4,8/10",
-    tags: ["psychological horror", "story-rich"],
-    url: "https://buffdrive.com/ry?pt=dmJlMXRrZkdHT1dXZ0VwTGpWazRhRXB2Y2pac1VGbE1abUpKTHpoWVdIQlRRMjF6Wm1jOVBRPT0%3D",
-    img: "",
-    steamId: "1150690"
-  },
-  {
-    name: "Among Us",
-    genre: "multiplayer",
-    size: "677 MB",
-    rating: "4,5/10",
-    tags: ["strategy", "party game"],
-    url: "https://buffdrive.com/9P7?pt=RVBmV0FQVXovR0s5ckpid2ZpcnlUVkpyVUZadmJHcHZlWEo2WTI1aWNXMHpWa2hRT0VFOVBRPT0%3D",
-    img: "",
-    steamId: "945360"
-  },
-  {
-    name: "Hollow Knight",
-    genre: "action",
-    size: "1.31 GB",
-    rating: "4,9/10",
-    tags: ["soulslike", "exploration"],
-    url: "https://buffdrive.com/4xo?pt=Vk8vYXl3R3pxRUQ5VFFEQUN4YnpXbVkyYVZsV1ZIbHhiVWRSUzBGNFJXOXFia3R6VGxFOVBRPT0%3D",
-    img: "",
-    steamId: "367520"
-  },
-  {
-    name: "Universe Sandbox",
-    genre: "simulation",
-    size: "1.12 GB",
-    rating: "4,8/10",
-    tags: ["space", "physics"],
-    url: "https://buffdrive.com/9N2?pt=dURnZm1XWmYyMTlZRzNET0RRRGowM0VyYzBOUk5EVTNRV2xNUVVVNFRrRkJhSGxzYzBFOVBRPT0%3D",
-    img: "",
-    steamId: "230290"
-  },
-  {
-    name: "Cuphead",
-    genre: "action",
-    size: "4.87 GB",
-    rating: "4,8/10",
-    tags: ["boss rush", "hand-drawn animation"],
-    url: "https://buffdrive.com/s2?pt=VDBEUC9VU294NjFBM29Tek4zTnJxVzFDUzFSS09FaFBRbmhKY1hWTmFuRmlhbEZwY1VFOVBRPT0%3D",
-    img: "",
-    steamId: "268910"
-  },
+  { name: "Deltarune", genre: "rpg", size: "504 MB", rating: "4,8/5", tags: ["bullet hell", "story-rich"], url: "https://buffdrive.com/7cn?pt=ZWVncDNOeDVVNjN1T3FoRzE4MTVlWGQyWWtsVVZFWmxOSHBxYm1GS1YxRlNXSE51UzBFOVBRPT0%3D", img: "", steamId: "1671210" },
+  { name: "Undertale", genre: "rpg", size: "172 MB", rating: "4,9/10", tags: ["pixel art", "choices matter"], url: "https://buffdrive.com/rv?pt=OCtKMlJkNXVsTGlJWDBLUjN3Wk0yVWxITlVJclRFaHVURVUyWm1WaVVIZExaa1UwUjJjOVBRPT0%3D", img: "", steamId: "391540" },
+  { name: "Ultrakill", genre: "action", size: "3.3 GB", rating: "4,9/10", tags: ["pixel art", "choices matter"], url: "https://buffdrive.com/cqa?pt=a210Nm5IVVpmL0tONXpld2oxTGtIRFZWZHl0b1NVRXdSSHBaT0UxT1NrOWhTbXhvTWtFOVBRPT0%3D", img: "", steamId: "1229490" },
+  { name: "Geometry Dash", genre: "action", size: "204 MB", rating: "4,7/10", tags: ["rhythm game", "level editor"], url: "https://buffdrive.com/4wo?pt=cm5XR1JFVXp6UU9IQmxFVjVyR2IwMVJvYW5sTU9VTkJSamx6Ym5CS1JtSkxiVlJyYmxFOVBRPT0%3D", img: "", steamId: "322170" },
+  { name: "People Playground", genre: "simulation", size: "211 MB", rating: "4,8/10", tags: ["physics", "gore"], url: "https://buffdrive.com/cpx?pt=OU5pdXJRaTJUaDlEOWl0VExBTUxWamd5Y2pJck9VdENVRWhaY0RNMGVrMHlZWEpHZDFFOVBRPT0%3D", img: "", steamId: "1118200" },
+  { name: "Lethal Company", genre: "horror", size: "706 MB", rating: "4,8/10", tags: ["co-op", "extraction"], url: "https://buffdrive.com/cos?pt=cWFEVGVqUndMVFZBQzRaYUk3MnYvRkZyYjBoMFNqSklNaXRSTHpGdVNEUnhSSHBSSzJjOVBRPT0%3D", img: "", steamId: "1966720" },
+  { name: "Omori", genre: "horror", size: "1.81 GB", rating: "4,8/10", tags: ["psychological horror", "story-rich"], url: "https://buffdrive.com/ry?pt=dmJlMXRrZkdHT1dXZ0VwTGpWazRhRXB2Y2pac1VGbE1abUpKTHpoWVdIQlRRMjF6Wm1jOVBRPT0%3D", img: "", steamId: "1150690" },
+  { name: "Among Us", genre: "multiplayer", size: "677 MB", rating: "4,5/10", tags: ["strategy", "party game"], url: "https://buffdrive.com/9P7?pt=RVBmV0FQVXovR0s5ckpid2ZpcnlUVkpyVUZadmJHcHZlWEo2WTI1aWNXMHpWa2hRT0VFOVBRPT0%3D", img: "", steamId: "945360" },
+  { name: "Hollow Knight", genre: "action", size: "1.31 GB", rating: "4,9/10", tags: ["soulslike", "exploration"], url: "https://buffdrive.com/4xo?pt=Vk8vYXl3R3pxRUQ5VFFEQUN4YnpXbVkyYVZsV1ZIbHhiVWRSUzBGNFJXOXFia3R6VGxFOVBRPT0%3D", img: "", steamId: "367520" },
+  { name: "Universe Sandbox", genre: "simulation", size: "1.12 GB", rating: "4,8/10", tags: ["space", "physics"], url: "https://buffdrive.com/9N2?pt=dURnZm1XWmYyMTlZRzNET0RRRGowM0VyYzBOUk5EVTNRV2xNUVVVNFRrRkJhSGxzYzBFOVBRPT0%3D", img: "", steamId: "230290" },
+  { name: "Cuphead", genre: "action", size: "4.87 GB", rating: "4,8/10", tags: ["boss rush", "hand-drawn animation"], url: "https://buffdrive.com/s2?pt=VDBEUC9VU294NjFBM29Tek4zTnJxVzFDUzFSS09FaFBRbmhKY1hWTmFuRmlhbEZxY1VFOVBRPT0%3D", img: "", steamId: "268910" },
 ];
 
 function getImg(gm) {
@@ -297,6 +282,15 @@ function render() {
     html += '</tr>';
   }
   document.getElementById('tbody').innerHTML = html || '<tr><td colspan="7">no games found.</td></tr>';
+}
+
+var dark = false;
+function toggleTheme() {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+  document.getElementById('icon-sun').style.display = dark ? 'block' : 'none';
+  document.getElementById('icon-moon').style.display = dark ? 'none' : 'block';
+
 }
 
 render();
