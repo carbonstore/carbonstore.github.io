@@ -642,7 +642,7 @@ function render() {
     html += '<td class="size">' + gm.size + '</td>';
     html += '<td class="rating">&#9733; ' + gm.rating + '</td>';
     html += '<td><span class="win-badge">&#x229E; Win</span></td>';
-    html += '<td><a class="dl" href="' + gm.url + '" target="_blank" rel="noopener">download</a></td>';
+    html += '<td><a class="dl" href="' + gm.url + '" target="_blank" rel="noopener noreferrer">download</a></td>';
     html += '</tr>';
   }
   document.getElementById('tbody').innerHTML = html || '<tr><td colspan="7">no games found.</td></tr>';
