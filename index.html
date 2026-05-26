@@ -659,6 +659,43 @@ var hasBgImage = false;
 /* ── localStorage helpers ── */
 var LS_KEY = 'carbonstore_customize';
 
+var LS_KEY = 'carbonstore_customize';
+var IDB_DB = 'carbonstore_db';
+var IDB_STORE = 'bg';
+
+function openIDB(cb) {
+  var req = indexedDB.open(IDB_DB, 1);
+  req.onupgradeneeded = function(e) { e.target.result.createObjectStore(IDB_STORE); };
+  req.onsuccess = function(e) { cb(e.target.result); };
+  req.onerror = function() { cb(null); };
+}
+
+function saveBgToIDB(dataUrl) {
+  openIDB(function(db) {
+    if (!db) return;
+    var tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).put(dataUrl, 'bgData');
+  });
+}
+
+function loadBgFromIDB(cb) {
+  openIDB(function(db) {
+    if (!db) return cb(null);
+    var tx = db.transaction(IDB_STORE, 'readonly');
+    var req = tx.objectStore(IDB_STORE).get('bgData');
+    req.onsuccess = function(e) { cb(e.target.result || null); };
+    req.onerror = function() { cb(null); };
+  });
+}
+
+function clearBgFromIDB() {
+  openIDB(function(db) {
+    if (!db) return;
+    var tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).delete('bgData');
+  });
+}
+
 function saveToLS() {
   try {
     var ids = [
@@ -672,16 +709,14 @@ function saveToLS() {
       var el = document.getElementById(id);
       if (el) data[id] = el.value;
     });
-    // store bg as dataURL only if it came from file upload (starts with data:)
     var bgImg = document.body.style.backgroundImage;
     if (bgImg && bgImg !== 'none') {
       var match = bgImg.match(/url\("?(.+?)"?\)/);
       if (match && match[1]) {
-        // only store data: URIs and plain URLs (not too large for LS)
         var url = match[1];
         if (url.startsWith('data:')) {
-          // only save if under ~4MB to avoid LS quota errors
-          if (url.length < 4000000) data['_bgData'] = url;
+          data['hasBgImage'] = true;
+          saveBgToIDB(url); // save large data to IndexedDB instead
         } else {
           data['_bgUrl'] = url;
         }
@@ -710,7 +745,6 @@ function loadFromLS() {
       }
     });
 
-    // restore display labels
     if (data['font-size-range']) document.getElementById('font-size-val').textContent = data['font-size-range'] + 'px';
     if (data['padding-range'])   document.getElementById('padding-val').textContent   = data['padding-range']   + 'px';
     if (data['blur-range'])      document.getElementById('blur-val').textContent      = data['blur-range']      + 'px';
@@ -718,7 +752,6 @@ function loadFromLS() {
     if (data['sb-width'])        document.getElementById('sb-width-val').textContent  = data['sb-width']        + 'px';
     if (data['sb-opacity'])      document.getElementById('sb-opacity-val').textContent= data['sb-opacity']      + '%';
 
-    // restore dark mode
     if (data.dark) {
       dark = true;
       document.documentElement.setAttribute('data-theme', 'dark');
@@ -726,15 +759,21 @@ function loadFromLS() {
       document.getElementById('icon-moon').style.display = 'none';
     }
 
-    // restore background
-    if (data['_bgData']) {
-      setBodyBg(data['_bgData']);
+    // load bg: try IndexedDB first (uploaded files), then URL fallback
+    if (data.hasBgImage) {
+      loadBgFromIDB(function(dataUrl) {
+        if (dataUrl) {
+          setBodyBg(dataUrl);
+        } else if (data['_bgUrl']) {
+          document.getElementById('bg-url').value = data['_bgUrl'];
+          setBodyBg(data['_bgUrl']);
+        }
+      });
     } else if (data['_bgUrl']) {
       document.getElementById('bg-url').value = data['_bgUrl'];
       setBodyBg(data['_bgUrl']);
     }
 
-    // restore title / subtitle / font / padding / scrollbar
     applyTitle();
     applySubtitle();
     applyFont();
@@ -743,6 +782,7 @@ function loadFromLS() {
     applyCustomColors();
   } catch(e) {}
 }
+
 
 /* wrap every mutating function to also call saveToLS */
 function withSave(fn) {
@@ -819,6 +859,7 @@ function removeBg() {
   document.getElementById('bg-file').value = '';
   hasBgImage = false;
   document.body.classList.remove('has-bg-image');
+  clearBgFromIDB();
   saveToLS();
 }
 
